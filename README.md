@@ -1,6 +1,17 @@
+<div align="center">
+
 # leet-sync
 
 An automated LeetCode workflow for macOS that handles the repetitive parts of competitive programming practice — fetching problems, organizing files, and syncing solutions to GitHub — so I can focus on solving.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)]()
+[![Language](https://img.shields.io/badge/lang-C++-f34b7d.svg)]()
+[![skhd](https://img.shields.io/badge/hotkey-skhd-green.svg)](https://github.com/koekeishiya/skhd)
+
+</div>
+
+---
 
 ## Overview
 
@@ -10,6 +21,8 @@ One hotkey (`Cmd+Shift+L`) from any LeetCode problem page in Chrome:
 3. Opens it in VS Code, ready to code
 
 After submission, a background daemon commits and pushes the solution here automatically.
+
+---
 
 ## Architecture
 
@@ -51,6 +64,8 @@ flowchart TD
     G -- "git add, commit, push" --> H
 ```
 
+---
+
 ## Repository Structure
 
 ```
@@ -78,6 +93,8 @@ leet-sync/
 ├── LICENSE
 └── README.md
 ```
+
+---
 
 ## Solution File Format
 
