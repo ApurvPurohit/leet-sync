@@ -127,14 +127,19 @@ After running setup:
 1. **Grant skhd accessibility access** — System Settings → Privacy & Security → Accessibility → add `/opt/homebrew/bin/skhd`
 2. **Sign into the LeetCode extension** — VS Code → LeetCode sidebar → Cookie login
 3. **Authenticate GitHub** — `gh auth login`
-4. **Patch the LeetCode extension** — the autopush daemon needs to know when a submission is accepted. Apply this one-line patch to the extension's submit handler:
+
+The setup script also patches the LeetCode VS Code extension to write a `.accepted` marker file on successful submissions. The autopush daemon watches for this marker — it's how it knows to commit only accepted solutions. If the extension wasn't installed at setup time (or gets updated later), re-run `./scripts/setup.sh` to re-apply the patch.
+
+<details>
+<summary>Manual patch (if needed)</summary>
+
+Find the extension's submit handler:
 
 ```bash
-# Find the extension's submit.js
 SUBMIT_JS=~/.vscode/extensions/leetcode.vscode-leetcode-*/out/src/commands/submit.js
 ```
 
-In that file, after the line:
+After the line:
 ```js
 const result = yield leetCodeExecutor_1.leetCodeExecutor.submitSolution(filePath);
 leetCodeSubmissionProvider_1.leetCodeSubmissionProvider.show(result);
@@ -148,7 +153,7 @@ if (result && result.indexOf("Accepted") !== -1) {
 }
 ```
 
-This writes a `.accepted` marker file that the autopush daemon watches for. Without this patch, nothing gets pushed.
+</details>
 
 ---
 
