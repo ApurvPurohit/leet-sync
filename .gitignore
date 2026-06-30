@@ -1,17 +1,12 @@
-# Build artifacts
 *.o
 *.out
 *.exe
 *.dSYM/
+*.log
 
-# IDE
 .vscode/
-!.vscode/settings.json
 .idea/
+.scripts/
 
-# OS
 .DS_Store
 Thumbs.db
-
-# Debug
-*.log

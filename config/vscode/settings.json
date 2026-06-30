@@ -1,0 +1,60 @@
+{
+    "leetcode.workspaceFolder": "/Volumes/workplace/LeetCode",
+    "leetcode.defaultLanguage": "cpp",
+    "leetcode.filePath": {
+        "default": {
+            "folder": "solutions/${tag}/${difficulty}",
+            "filename": "${id}.${snake_case_name}.${ext}"
+        }
+    },
+    "leetcode.showDescription": "In Webview",
+    "leetcode.editor.shortcuts": [
+        "submit",
+        "test",
+        "solution",
+        "description"
+    ],
+
+    // Disable all autocomplete and suggestions
+    "editor.quickSuggestions": {
+        "other": "off",
+        "comments": "off",
+        "strings": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.parameterHints.enabled": false,
+    "editor.wordBasedSuggestions": "off",
+    "editor.snippetSuggestions": "none",
+    "editor.inlineSuggest.enabled": false,
+    "editor.hover.enabled": false,
+    "github.copilot.enable": {
+        "*": false
+    },
+
+    // Disable all error/warning diagnostics
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
+
+    // Clean, distraction-free UI
+    "editor.fontFamily": "JetBrains Mono, Menlo, monospace",
+    "editor.fontSize": 15,
+    "editor.lineHeight": 1.6,
+    "editor.minimap.enabled": false,
+    "editor.scrollbar.vertical": "hidden",
+    "editor.overviewRulerBorder": false,
+    "editor.renderLineHighlight": "none",
+    "editor.occurrencesHighlight": "off",
+    "editor.matchBrackets": "near",
+    "editor.guides.indentation": false,
+    "editor.lineNumbers": "on",
+    "editor.cursorBlinking": "solid",
+    "editor.cursorStyle": "line",
+    "editor.tabSize": 4,
+    "breadcrumbs.enabled": false,
+    "workbench.activityBar.location": "default",
+    "workbench.statusBar.visible": false,
+    "workbench.colorTheme": "Default Light Modern",
+    "window.commandCenter": false,
+    "editor.linkedEditing": false
+}
