@@ -2,7 +2,7 @@
 
 # leet-sync
 
-I got tired of the context-switching overhead between Chrome, VS Code, and git while grinding LeetCode. So I built this — a set of scripts and services that wire everything together. One hotkey fetches the problem I'm looking at in Chrome, drops the C++ template into the right folder, opens it in VS Code, and pushes to GitHub when I get an AC. Nothing else to think about.
+I got tired of the context-switching overhead between browser, IDE, and git while solving LeetCode problems. So I built **leet-sync** - a utility that wires everything together. One hotkey fetches the problem I'm looking at in Google Chrome, drops the C++ template into the right folder, opens it in VS Code, and pushes to GitHub when I get an AC. Nothing else to think about.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)]()
