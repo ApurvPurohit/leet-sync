@@ -27,41 +27,20 @@ When a submission gets accepted, a background daemon picks it up and pushes it h
 ## Architecture
 
 ```mermaid
-flowchart TD
-    subgraph Input
-        A[Chrome — LeetCode problem page]
-    end
+flowchart LR
+    Chrome["Chrome\n(LeetCode problem page)"]
+    Script["leetcode-open.sh"]
+    API["LeetCode GraphQL API"]
+    VSCode["VS Code\n(Test → Submit)"]
+    Daemon["autopush daemon"]
+    GitHub["GitHub"]
 
-    subgraph Hotkey Service
-        B[skhd daemon]
-        C[leetcode-open.sh]
-    end
-
-    subgraph External
-        D[LeetCode GraphQL API]
-    end
-
-    subgraph Editor
-        E[VS Code]
-        F[LeetCode Extension — Test / Submit]
-    end
-
-    subgraph Sync Service
-        G[autopush daemon — Launch Agent]
-    end
-
-    subgraph Remote
-        H[GitHub Repository]
-    end
-
-    A -- "Cmd+Shift+L" --> B
-    B --> C
-    C -- "POST /graphql" --> D
-    D -- "problem metadata + code template" --> C
-    C -- "creates file, opens editor" --> E
-    E --> F
-    F -- "Accepted → .accepted marker" --> G
-    G -- "git add, commit, push" --> H
+    Chrome -- "Cmd+Shift+L\n(via skhd)" --> Script
+    Script -- "fetch problem + template" --> API
+    API --> Script
+    Script -- "create file, open editor" --> VSCode
+    VSCode -- "Accepted → .accepted marker" --> Daemon
+    Daemon -- "git commit + push" --> GitHub
 ```
 
 ---
@@ -149,6 +128,28 @@ After running setup:
 1. **Grant skhd accessibility access** — System Settings → Privacy & Security → Accessibility → add `/opt/homebrew/bin/skhd`
 2. **Sign into the LeetCode extension** — VS Code → LeetCode sidebar → Cookie login
 3. **Authenticate GitHub** — `gh auth login`
+4. **Patch the LeetCode extension** — the autopush daemon needs to know when a submission is accepted. Apply this one-line patch to the extension's submit handler:
+
+```bash
+# Find the extension's submit.js
+SUBMIT_JS=~/.vscode/extensions/leetcode.vscode-leetcode-*/out/src/commands/submit.js
+```
+
+In that file, after the line:
+```js
+const result = yield leetCodeExecutor_1.leetCodeExecutor.submitSolution(filePath);
+leetCodeSubmissionProvider_1.leetCodeSubmissionProvider.show(result);
+```
+
+Add:
+```js
+if (result && result.indexOf("Accepted") !== -1) {
+    const fs = require("fs");
+    fs.writeFileSync("/Volumes/workplace/LeetCode/.accepted", filePath + "\n", { flag: "w" });
+}
+```
+
+This writes a `.accepted` marker file that the autopush daemon watches for. Without this patch, nothing gets pushed.
 
 ---
 
@@ -158,7 +159,7 @@ After running setup:
 2. Press `Cmd+Shift+L`
 3. Write your solution in VS Code
 4. Click Test → Click Submit
-5. Solution is committed and pushed automatically
+5. On acceptance, the solution is committed and pushed automatically
 
 Re-opening a previously solved problem navigates to the existing file — edit and resubmit to overwrite.
 
@@ -196,7 +197,7 @@ tail -f /tmp/leetcode-autopush.log
 
 **Language** — update `leetcode.defaultLanguage` in `config/vscode/settings.json` and the language filter in `scripts/leetcode-open.sh`
 
-**Repository path** — update the `REPO` variable in both scripts, the plist, the skhdrc, and the VS Code settings
+**Repository path** — grep for `/Volumes/workplace/LeetCode` across the repo and update all 6 occurrences (both scripts, plist, skhdrc, VS Code settings, and the extension patch in setup.sh)
 
 ---
 

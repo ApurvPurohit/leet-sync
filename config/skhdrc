@@ -1,3 +1,2 @@
-# LeetCode global hotkey configuration for skhd
-# Cmd+Shift+L: Fetch current LeetCode problem from Chrome and open in VS Code
+# Cmd+Shift+L: fetch problem from Chrome, open in VS Code
 cmd + shift - l : /Volumes/workplace/LeetCode/scripts/leetcode-open.sh

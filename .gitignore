@@ -6,7 +6,6 @@
 
 .vscode/
 .idea/
-.scripts/
 
 .DS_Store
 Thumbs.db

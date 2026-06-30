@@ -15,7 +15,6 @@
         "description"
     ],
 
-    // Disable all autocomplete and suggestions
     "editor.quickSuggestions": {
         "other": "off",
         "comments": "off",
@@ -32,11 +31,9 @@
         "*": false
     },
 
-    // Disable all error/warning diagnostics
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.intelliSenseEngine": "disabled",
 
-    // Clean, distraction-free UI
     "editor.fontFamily": "JetBrains Mono, Menlo, monospace",
     "editor.fontSize": 15,
     "editor.lineHeight": 1.6,

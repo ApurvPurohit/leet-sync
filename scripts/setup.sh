@@ -26,6 +26,18 @@ command -v skhd &>/dev/null || brew install koekeishiya/formulae/skhd
 find ~/Library/Fonts /Library/Fonts -iname "*JetBrainsMono*" 2>/dev/null | grep -q . || \
     brew install --cask font-jetbrains-mono
 
+# -- Patch LeetCode extension (write .accepted marker on AC) --
+
+SUBMIT_JS=$(find ~/.vscode/extensions/leetcode.vscode-leetcode-*/out/src/commands/submit.js 2>/dev/null | head -1)
+if [ -n "$SUBMIT_JS" ] && ! grep -q ".accepted" "$SUBMIT_JS" 2>/dev/null; then
+    sed -i '' '/leetCodeSubmissionProvider.show(result);/a\
+            if (result \&\& result.indexOf("Accepted") !== -1) { const fs = require("fs"); fs.writeFileSync("/Volumes/workplace/LeetCode/.accepted", filePath + "\\n", { flag: "w" }); }
+' "$SUBMIT_JS"
+    echo "Patched LeetCode extension for auto-push on AC."
+else
+    echo "LeetCode extension already patched (or not installed yet — patch after signing in)."
+fi
+
 # -- Wire up configs --
 
 mkdir -p "$REPO_DIR/.vscode"
