@@ -208,6 +208,8 @@ The workspace is configured for distraction-free problem solving:
 - C/C++ IntelliSense and error diagnostics turned off (LeetCode templates are incomplete by design — includes are missing, so diagnostics are noise)
 - JetBrains Mono 15px, light theme, no minimap, no status bar
 
+---
+
 ## Commit Format
 
 ```
@@ -215,6 +217,8 @@ solve: 61.rotate_list
 solve: 1.two_sum, 9.palindrome_number
 ```
 
+---
+
 ## License
 
-MIT
+[MIT](LICENSE)
