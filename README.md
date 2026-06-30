@@ -1,97 +1,188 @@
 # leet-sync
 
-My LeetCode setup. One hotkey to go from a problem page in Chrome to a ready-to-code file in VS Code, with solutions auto-pushed to this repo.
+An automated LeetCode workflow for macOS that handles the repetitive parts of competitive programming practice — fetching problems, organizing files, and syncing solutions to GitHub — so I can focus on solving.
 
-## How it works
+## Overview
+
+One hotkey (`Cmd+Shift+L`) from any LeetCode problem page in Chrome:
+1. Fetches the problem metadata and C++ template from LeetCode's GraphQL API
+2. Creates the solution file at the correct path with proper extension markers
+3. Opens it in VS Code, ready to code
+
+After submission, a background daemon commits and pushes the solution here automatically.
+
+## Architecture
 
 ```mermaid
-flowchart LR
-    A[Chrome] -->|Cmd+Shift+L| B[leetcode-open.sh]
-    B -->|GraphQL| C[leetcode.com]
-    C --> B
-    B -->|creates file| D[VS Code]
-    D -->|on save| E[autopush daemon]
-    E -->|commit + push| F[GitHub]
+flowchart TD
+    subgraph Input
+        A[Chrome — LeetCode problem page]
+    end
+
+    subgraph Hotkey Service
+        B[skhd daemon]
+        C[leetcode-open.sh]
+    end
+
+    subgraph External
+        D[LeetCode GraphQL API]
+    end
+
+    subgraph Editor
+        E[VS Code]
+        F[LeetCode Extension — Test / Submit]
+    end
+
+    subgraph Sync Service
+        G[autopush daemon — Launch Agent]
+    end
+
+    subgraph Remote
+        H[GitHub Repository]
+    end
+
+    A -- "Cmd+Shift+L" --> B
+    B --> C
+    C -- "POST /graphql" --> D
+    D -- "problem metadata + code template" --> C
+    C -- "creates file, opens editor" --> E
+    E --> F
+    F -- "file written" --> G
+    G -- "git add, commit, push" --> H
 ```
 
-I press `Cmd+Shift+L` while on a LeetCode problem in Chrome. A shell script grabs the URL, hits LeetCode's GraphQL API for the problem metadata and C++ starter code, drops it into the right folder, and opens it in VS Code. When I'm done solving, a background daemon picks up the change and pushes it here.
-
-Both the hotkey listener (`skhd`) and the push daemon run as macOS Launch Agents — they start on login and stay running. I don't think about them.
-
-## What's in here
+## Repository Structure
 
 ```
-scripts/
-  setup.sh            — installs deps, wires up services
-  leetcode-open.sh    — the hotkey script (Chrome → API → VS Code)
-  autopush.sh         — polls for changes, commits, pushes
-
-config/
-  vscode/settings.json   — distraction-free editor (no autocomplete, no squiggles)
-  launchd/               — plist for the autopush daemon
-  skhdrc                 — hotkey binding
-
-solutions/              — organized as {topic}/{difficulty}/{id}.{name}.cpp
+leet-sync/
+├── scripts/
+│   ├── setup.sh               — one-command install and configuration
+│   ├── leetcode-open.sh       — Chrome → LeetCode API → VS Code bridge
+│   └── autopush.sh            — background daemon: poll, commit, push
+│
+├── config/
+│   ├── vscode/settings.json   — editor settings (no autocomplete, no diagnostics)
+│   ├── launchd/               — macOS Launch Agent plist for autopush
+│   └── skhdrc                 — global hotkey binding
+│
+├── solutions/                  — {topic}/{difficulty}/{id}.{name}.cpp
+│   ├── array/
+│   │   ├── easy/
+│   │   └── medium/
+│   ├── linked-list/
+│   │   └── medium/
+│   └── math/
+│       └── easy/
+│
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
-## Setup
+## Solution File Format
 
-Requires macOS, Homebrew, VS Code, Chrome.
+Each file includes the markers required by the VS Code LeetCode extension for in-editor test and submit:
+
+```cpp
+/*
+ * @lc app=leetcode id=61 lang=cpp
+ *
+ * [61] Rotate List
+ */
+
+// @lc code=start
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+
+    }
+};
+// @lc code=end
+```
+
+## Requirements
+
+- macOS 13 or later
+- [Homebrew](https://brew.sh)
+- [Visual Studio Code](https://code.visualstudio.com)
+- [Google Chrome](https://www.google.com/chrome/)
+- [GitHub CLI](https://cli.github.com) (`brew install gh`)
+- [skhd](https://github.com/koekeishiya/skhd) (`brew install koekeishiya/formulae/skhd`)
+- [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (`brew install --cask font-jetbrains-mono`)
+- Python 3 (ships with macOS)
+
+## Installation
 
 ```bash
-git clone https://github.com/ApurvPurohit/leet-sync.git
-cd leet-sync
+git clone https://github.com/ApurvPurohit/leet-sync.git /Volumes/workplace/LeetCode
+cd /Volumes/workplace/LeetCode
 ./scripts/setup.sh
 ```
 
-The setup script installs `skhd`, `gh`, the LeetCode VS Code extension, and JetBrains Mono. It registers the Launch Agent and configures the hotkey.
+The setup script handles dependency installation, service registration, and editor configuration.
 
-After setup:
-- Grant `skhd` accessibility access (System Settings → Privacy & Security → Accessibility)
-- Sign into the LeetCode extension in VS Code (use Cookie method)
-- `gh auth login` if not already authenticated
+After running setup:
 
-## Daily use
+1. **Grant skhd accessibility access** — System Settings → Privacy & Security → Accessibility → add `/opt/homebrew/bin/skhd`
+2. **Sign into the LeetCode extension** — VS Code → LeetCode sidebar → Cookie login
+3. **Authenticate GitHub** — `gh auth login`
 
-1. Open a problem on leetcode.com
-2. `Cmd+Shift+L`
-3. Write solution, hit Test, hit Submit
-4. That's it — auto-pushed
+## Usage
 
-If I open a problem I've already solved, it just opens the existing file.
+1. Open any problem on `leetcode.com` in Chrome
+2. Press `Cmd+Shift+L`
+3. Write your solution in VS Code
+4. Click Test → Click Submit
+5. Solution is committed and pushed automatically
 
-## Editor config
+Re-opening a previously solved problem navigates to the existing file — edit and resubmit to overwrite.
 
-VS Code is set up for distraction-free solving:
-- No autocomplete, no parameter hints, no Copilot
-- No IntelliSense squiggles (LeetCode templates don't include headers, so everything would be red)
-- JetBrains Mono, light theme, no minimap, no status bar
+## Services
 
-## File naming
+Two macOS Launch Agents run in the background. Both start on login and restart if they crash.
 
+| Service | Purpose |
+|---------|---------|
+| `com.koekeishiya.skhd` | Listens for the global hotkey |
+| `com.leetcode.autopush` | Watches for file changes, waits for stability (30s), commits and pushes |
+
+```bash
+# status
+launchctl list | grep -E "leetcode|skhd"
+
+# restart autopush
+launchctl unload ~/Library/LaunchAgents/com.leetcode.autopush.plist
+launchctl load ~/Library/LaunchAgents/com.leetcode.autopush.plist
+
+# restart skhd
+skhd --restart-service
+
+# logs
+tail -f /tmp/leetcode-autopush.log
 ```
-solutions/array/easy/1.two_sum.cpp
-solutions/linked-list/medium/61.rotate_list.cpp
-solutions/dynamic-programming/hard/312.burst_balloons.cpp
-```
 
-The topic comes from LeetCode's first tag for the problem. Difficulty is lowercase. Filename is `{id}.{snake_case_name}.cpp`.
+## Configuration
 
-## Commits
+**Hotkey** — edit `config/skhdrc`, then `skhd --restart-service`
 
-The autopush daemon waits for files to stop changing (30s of stability), then commits:
+**Language** — update `leetcode.defaultLanguage` in `config/vscode/settings.json` and the language filter in `scripts/leetcode-open.sh`
+
+**Repository path** — update the `REPO` variable in both scripts, the plist, the skhdrc, and the VS Code settings
+
+## Editor Configuration
+
+The workspace is configured for distraction-free problem solving:
+
+- All autocomplete, suggestions, and inline hints disabled
+- C/C++ IntelliSense and error diagnostics turned off (LeetCode templates are incomplete by design — includes are missing, so diagnostics are noise)
+- JetBrains Mono 15px, light theme, no minimap, no status bar
+
+## Commit Format
 
 ```
 solve: 61.rotate_list
+solve: 1.two_sum, 9.palindrome_number
 ```
-
-## Changing things
-
-**Hotkey** — edit `config/skhdrc`, run `skhd --restart-service`
-
-**Language** — change `leetcode.defaultLanguage` in `config/vscode/settings.json` and the `lang == 'C++'` filter in `scripts/leetcode-open.sh`
-
-**Repo path** — grep for `/Volumes/workplace/LeetCode` and update everywhere (there are 5 places; yes, that's annoying, but it beats a config file for a personal tool)
 
 ## License
 
