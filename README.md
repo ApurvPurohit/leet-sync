@@ -117,16 +117,22 @@ public:
 // @lc code=end
 ```
 
+---
+
 ## Requirements
 
-- macOS 13 or later
-- [Homebrew](https://brew.sh)
-- [Visual Studio Code](https://code.visualstudio.com)
-- [Google Chrome](https://www.google.com/chrome/)
-- [GitHub CLI](https://cli.github.com) (`brew install gh`)
-- [skhd](https://github.com/koekeishiya/skhd) (`brew install koekeishiya/formulae/skhd`)
-- [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (`brew install --cask font-jetbrains-mono`)
-- Python 3 (ships with macOS)
+| Dependency | Purpose | Install |
+|:-----------|:--------|:--------|
+| macOS 13+ | Launch Agents, AppleScript | — |
+| [Homebrew](https://brew.sh) | Package manager | [brew.sh](https://brew.sh) |
+| [VS Code](https://code.visualstudio.com) | Editor | `brew install --cask visual-studio-code` |
+| [Google Chrome](https://www.google.com/chrome/) | Browser integration | — |
+| [GitHub CLI](https://cli.github.com) | Auth and repo management | `brew install gh` |
+| [skhd](https://github.com/koekeishiya/skhd) | Global hotkey daemon | `brew install koekeishiya/formulae/skhd` |
+| [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | Editor font | `brew install --cask font-jetbrains-mono` |
+| Python 3 | API response parsing | Pre-installed on macOS |
+
+---
 
 ## Installation
 
@@ -144,6 +150,8 @@ After running setup:
 2. **Sign into the LeetCode extension** — VS Code → LeetCode sidebar → Cookie login
 3. **Authenticate GitHub** — `gh auth login`
 
+---
+
 ## Usage
 
 1. Open any problem on `leetcode.com` in Chrome
@@ -153,6 +161,8 @@ After running setup:
 5. Solution is committed and pushed automatically
 
 Re-opening a previously solved problem navigates to the existing file — edit and resubmit to overwrite.
+
+---
 
 ## Services
 
@@ -178,6 +188,8 @@ skhd --restart-service
 tail -f /tmp/leetcode-autopush.log
 ```
 
+---
+
 ## Configuration
 
 **Hotkey** — edit `config/skhdrc`, then `skhd --restart-service`
@@ -185,6 +197,8 @@ tail -f /tmp/leetcode-autopush.log
 **Language** — update `leetcode.defaultLanguage` in `config/vscode/settings.json` and the language filter in `scripts/leetcode-open.sh`
 
 **Repository path** — update the `REPO` variable in both scripts, the plist, the skhdrc, and the VS Code settings
+
+---
 
 ## Editor Configuration
 
